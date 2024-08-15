@@ -41,23 +41,24 @@ async fn report_bug(pool: web::Data<MySqlPool>, item: web::Json<BugReport>) -> i
         return HttpResponse::BadRequest().body(e);
     }
 
-    // let result = sqlx::query!(
-    //     "INSERT INTO test (num, str) VALUES (?, ?)",
-    //     item.score,
-    //     item.username
-    // )
-    //     .execute(pool.get_ref())
-    //     .await;
+    let result = sqlx::query!(
+        "INSERT INTO bugreports (name, email, date, problem, severity) VALUES (?, ?, ?, ?, ?)",
+        item.name,
+        item.email,
+        item.date,
+        item.problem,
+        item.severity
+    )
+        .execute(pool.get_ref())
+        .await;
 
-    // match result {
-    //     Ok(_) => HttpResponse::Ok().body("High score submitted!"),
-    //     Err(e) => {
-    //         eprintln!("Failed to insert high score: {}", e);
-    //         HttpResponse::InternalServerError().body("Failed to submit high score.")
-    //     }
-    // }
-
-    HttpResponse::Ok().body("High score submitted!")
+    match result {
+        Ok(_) => HttpResponse::Ok().body("Bug report submitted!"),
+        Err(e) => {
+            eprintln!("Failed to insert high score: {}", e);
+            HttpResponse::InternalServerError().body("Failed to submit bug report.")
+        }
+    }
 }
 
 #[actix_web::main]
@@ -73,7 +74,7 @@ async fn main() -> std::io::Result<()> {
             .service(report_bug)
             .service(index)
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("0.0.0.0", 2048))?
     .run()
     .await
 }

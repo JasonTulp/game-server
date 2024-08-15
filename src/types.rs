@@ -18,7 +18,7 @@ pub struct BugReport {
 
 
 impl BugReport {
-    // Ensure each parameter is within the sepcified bounds
+    // Ensure each parameter is within the specified bounds
     pub fn validate(&self) -> Result<(), &'static str> {
         if self.name.len() <= 0 {
             return Err("Name field can't be empty");
